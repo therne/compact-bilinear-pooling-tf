@@ -9,9 +9,9 @@ class CountSketchTest(tf.test.TestCase):
             sk = count_sketch(p, d)
             tf.initialize_all_variables().run()
 
-            thg, numg = tf.test.compute_gradient(p, [1, 12], sk, [1, 6])
-            print('Theorical Gradient : {}'.format(thg))
-            print('Numerical Gradient : {}'.format(numg))
+            # thg, numg = tf.test.compute_gradient(p, [1, 12], sk, [1, 6])
+            # print('Theorical Gradient : {}'.format(thg))
+            # print('Numerical Gradient : {}'.format(numg))
 
             err = tf.test.compute_gradient_error(p, [1, 12], sk, [1, 6])
             print('SK Gradient Error : %.2f' % err)
@@ -28,8 +28,12 @@ class BilinearPoolingTest(tf.test.TestCase):
 
             tf.initialize_all_variables().run()
 
-            err = tf.test.compute_gradient_error([p1, p2], ([1, 12], [1, 9]), bp, [1, 6])
-            print('BP Gradient Error : %.2f' % err)
+            err = tf.test.compute_gradient_error(p1, [1, 12], bp, [1, 6])
+            print('BP Gradient Error (1) : %.2f' % err)
+            self.assertTrue(err < 1e-3, 'Gradient must be matched with numerical gradient.')
+
+            err = tf.test.compute_gradient_error(p2, [1, 9], bp, [1, 6])
+            print('BP Gradient Error (2) : %.2f' % err)
             self.assertTrue(err < 1e-3, 'Gradient must be matched with numerical gradient.')
 
 if __name__ == '__main__':
