@@ -38,5 +38,5 @@ with tf.Session() as sess:
 
 - [Compact Bilinear Pooling by Gao et al.](https://arxiv.org/abs/1511.06062)
 - [Multimodal Compact Bilinear Pooling for Visual Question Answering and Visual Grounding](https://arxiv.org/abs/1606.01847)
-- [Compact Bilinear Pooling by Gao et al.](https://arxiv.org/abs/1511.06062)
+- [Multimodal Compact Bilinear Pooling for Torch7](https://github.com/jnhwkim/cbp)
 - [Compact Bilinear Pooling for Caffe and Matconvnet](https://github.com/gy20073/compact_bilinear_pooling)
