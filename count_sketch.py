@@ -1,7 +1,6 @@
 import tensorflow as tf
 
-_count_sketch_module = tf.load_op_library('./build/count_sketch.so')
-_store = {}
+_sketch_op = tf.load_op_library('./build/count_sketch.so')
 
 def count_sketch(probs, project_size):
     """ Calculates count-min sketch of a tensor.
@@ -26,7 +25,7 @@ def count_sketch(probs, project_size):
         h = tf.cast(h, 'int32')
         s = tf.cast(tf.floor(s) * 2 - 1, 'int32') # 1 or -1
 
-        sk = _count_sketch_module.count_sketch(probs, h, s, project_size)
+        sk = _sketch_op.count_sketch(probs, h, s, project_size)
         sk.set_shape([probs.get_shape()[0], project_size])
         return sk
 
@@ -34,7 +33,7 @@ def count_sketch(probs, project_size):
 def _count_sketch_grad(op, grad):
     probs, h, s, _ = op.inputs
     input_size = int(probs.get_shape()[1])
-    return [_count_sketch_module.count_sketch_grad(grad, h, s, input_size), None, None, None]
+    return [_sketch_op.count_sketch_grad(grad, h, s, input_size), None, None, None]
 
 def bilinear_pool(x1, x2, output_size):
     """ Computes approximation of bilinear pooling with respect to x1, x2.
