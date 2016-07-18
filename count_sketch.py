@@ -16,8 +16,9 @@ def count_sketch(probs, project_size):
         input_size = int(probs.get_shape()[1])
 
         # h, s must be sampled once
-        if scope.name in _store: scope.reuse_variables()
-        _store[scope.name] = True
+        history = tf.get_collection('__countsketch')
+        if scope.name in history: scope.reuse_variables()
+        tf.add_to_collection('__countsketch', scope.name)
 
         h = tf.get_variable('h', [input_size], initializer=tf.random_uniform_initializer(0, project_size), trainable=False)
         s = tf.get_variable('s', [input_size], initializer=tf.random_uniform_initializer(0, 2), trainable=False)
@@ -51,6 +52,6 @@ def bilinear_pool(x1, x2, output_size):
     p1 = count_sketch(x1, output_size)
     p2 = count_sketch(x2, output_size)
     pc1 = tf.complex(p1, tf.zeros_like(p1))
-    pc2 = tf.complex(p1, tf.zeros_like(p2))
+    pc2 = tf.complex(p2, tf.zeros_like(p2))
 
     return tf.batch_ifft(tf.batch_fft(pc1) * tf.batch_fft(pc2))
