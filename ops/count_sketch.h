@@ -9,35 +9,22 @@ using namespace tensorflow;
 
 typedef Eigen::ThreadPoolDevice CPUDevice;
 typedef Eigen::GpuDevice GPUDevice;
+typedef TTypes<float, 2>::ConstTensor ConstFloatMatrix;
+typedef TTypes<float, 2>::Tensor FloatMatrix;
+typedef TTypes<int, 1>::ConstTensor IntVector;
 
 namespace functor {
 
-template<typename Device> struct CountSketch {
-    void operator()(const Device& d, int batch_size, int input_size, int dims, typename TTypes<float, 2>::ConstTensor probs,
-                    typename TTypes<int, 1>::ConstTensor h, typename TTypes<int, 1>::ConstTensor s,
-                    typename TTypes<float, 2>::Tensor sketch) {
-        for (int i=0; i<batch_size; i++) {
-            for (int j=0; j<dims; j++) sketch(i, j) = 0; // zero init
-            for (int j=0; j<input_size; j++) {
-                sketch(i, h(j)) += s(j) * probs(i, j);
-            }
-        }
-    }
-};
+    // Perhaps... for device polymorphism?
+    template<typename Device> struct CountSketch {
+        void operator()(const Device& d, int batch_size, int input_size, int dims,
+                        ConstFloatMatrix probs, IntVector h, IntVector s, FloatMatrix sketch);
+    };
 
-template<typename Device> struct CountSketchGrad {
-    void operator()(const Device& d, int batch_size, int input_size, int dims, typename TTypes<float, 2>::ConstTensor probs,
-                    typename TTypes<int, 1>::ConstTensor h, typename TTypes<int, 1>::ConstTensor s,
-                    typename TTypes<float, 2>::Tensor sketch) {
-
-        for (int i=0; i<batch_size; i++) {
-            for (int j=0; j<dims; j++) sketch(i, j) = 0; // zero init
-            for (int j=0; j<dims; j++) {
-                sketch(i, j) = s(j) * probs(i, h(j));
-            }
-        }
-    }
-};
+    template<typename Device> struct CountSketchGrad {
+        void operator()(const Device& d, int batch_size, int input_size, int dims,
+                        ConstFloatMatrix probs, IntVector h, IntVector s, FloatMatrix sketch);
+    };
 
 } // namespace functor
 #endif  // CBP_COUNT_SKETCH_H_

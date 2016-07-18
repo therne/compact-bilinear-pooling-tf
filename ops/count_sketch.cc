@@ -54,6 +54,20 @@ public:
     }
 };
 
+// CounterSketch CPU kernel
+namespace functor {
+template<> void CountSketch<CPUDevice>::operator()(const CPUDevice& d, int batch_size,
+                int input_size, int dims, ConstFloatMatrix probs,
+                IntVector h, IntVector s, FloatMatrix sketch) {
+
+    for (int i=0; i<batch_size; i++) {
+        for (int j=0; j<dims; j++) sketch(i, j) = 0; // zero init
+        for (int j=0; j<input_size; j++) {
+            sketch(i, h(j)) += s(j) * probs(i, j);
+        }
+    }
+}
+}
 
 template <typename Device>
 class CountSketchGradOp: public OpKernel {
@@ -83,9 +97,24 @@ public:
     }
 };
 
+// CounterSketchGrad CPU kernel
+namespace functor {
+template<> void CountSketchGrad<CPUDevice>::operator()(const CPUDevice& d, int batch_size,
+                int input_size, int dims, ConstFloatMatrix probs,
+                IntVector h, IntVector s, FloatMatrix sketch) {
+
+    for (int i=0; i<batch_size; i++) {
+        for (int j=0; j<dims; j++) sketch(i, j) = 0; // zero init
+        for (int j=0; j<dims; j++) {
+            sketch(i, j) = s(j) * probs(i, h(j));
+        }
+    }
+}
+}
 
 REGISTER_KERNEL_BUILDER(Name("CountSketch").Device(DEVICE_CPU), CountSketchOp<CPUDevice>);
 REGISTER_KERNEL_BUILDER(Name("CountSketchGrad").Device(DEVICE_CPU), CountSketchGradOp<CPUDevice>);
 
 // TODO: FUCK CUDA!!!!
 //REGISTER_KERNEL_BUILDER(Name("CountSketch").Device(DEVICE_GPU).HostMemory("proj_size"), CountSketchOp<GPUDevice>);
+//REGISTER_KERNEL_BUILDER(Name("CountSketchGrad").Device(DEVICE_GPU).HostMemory("proj_size"), CountSketchGradOp<GPUDevice>);
