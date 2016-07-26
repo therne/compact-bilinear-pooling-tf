@@ -28,3 +28,15 @@ with tf.Session() as sess:
   sess.run(tf.initialize_all_variables())
   print('Result: {}'.format(sess.run(pooled)))
 ```
+
+### TODO
+
+- GPU support
+- Support for Mac, Windows
+
+### References
+
+- [Compact Bilinear Pooling by Gao et al.](https://arxiv.org/abs/1511.06062)
+- [Multimodal Compact Bilinear Pooling for Visual Question Answering and Visual Grounding](https://arxiv.org/abs/1606.01847)
+- [Multimodal Compact Bilinear Pooling for Torch7](https://github.com/jnhwkim/cbp)
+- [Compact Bilinear Pooling for Caffe and Matconvnet](https://github.com/gy20073/compact_bilinear_pooling)
