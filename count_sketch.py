@@ -1,6 +1,10 @@
 import tensorflow as tf
+import pkg_resources
 
-_sketch_op = tf.load_op_library('./build/count_sketch.so')
+path = "./build/count_sketch.so"
+filepath = pkg_resources.resource_filename(__name__, path)
+
+_sketch_op = tf.load_op_library(filepath)
 
 def count_sketch(probs, project_size):
     """ Calculates count-min sketch of a tensor.
