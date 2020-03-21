@@ -53,5 +53,5 @@ def bilinear_pool(x1, x2, output_size):
     pc1 = tf.complex(p1, tf.zeros_like(p1))
     pc2 = tf.complex(p2, tf.zeros_like(p2))
 
-    conved = tf.batch_ifft(tf.batch_fft(pc1) * tf.batch_fft(pc2))
+    conved = tf.ifft(tf.fft(pc1) * tf.fft(pc2))
     return tf.real(conved)
